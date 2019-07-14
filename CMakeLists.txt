@@ -31,6 +31,7 @@ add_executable(
     "src/glad.c"
 
     "src/shader.cpp"
+    "src/orbit_camera.cpp"
 )
 target_link_libraries(mathsopengl imgui ${OPENGL_LIBRARIES} ${GLFW_LIBRARY_DIRS} ${EXTRA_LIBS} dl glfw)
 

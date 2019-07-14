@@ -8,17 +8,22 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "shader.h"
+#include "orbit_camera.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void errorCallback(int error, const char* description);
+void onError(int error, const char* description);
+void onScroll(GLFWwindow* window, double offsetX, double offsetY);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main(int argc, char** argv) {
-    glfwSetErrorCallback(errorCallback);
+    glfwSetErrorCallback(onError);
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4); // Multisampling
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -51,7 +56,11 @@ int main(int argc, char** argv) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-
+    double currentFrame, lastFrame, deltaTime;
+    OrbitCamera camera(10.0f);
+    glfwSetWindowUserPointer(window, &camera);
+    glfwSetScrollCallback(window, onScroll);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
     Shader basicShader("shaders/basic.vs.glsl", "shaders/basic.fs.glsl");
 
     // Set up vertex data (and buffer(s)) and configure vertex attributes
@@ -91,17 +100,30 @@ int main(int argc, char** argv) {
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         processInput(window);
 
+        currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        camera.update(window, deltaTime);
+
         glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glm::mat4 local(1.0f);
+        local = glm::rotate(local, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
         basicShader.use();
-        basicShader.setFloat("offset", std::sin(glfwGetTime()) / 2.0f);
+        basicShader.setMat4("model", local);
+        basicShader.setMat4("view", camera.getViewMatrix());
+        basicShader.setMat4("projection", projection);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
@@ -150,6 +172,13 @@ void processInput(GLFWwindow* window) {
     }
 }
 
-void errorCallback(int error, const char* description) {
+void onError(int error, const char* description) {
     std::cerr << "Error " << error << ": " << description << std::endl;
+}
+
+void onScroll(GLFWwindow* window, double offsetX, double offsetY) {
+    OrbitCamera* cam = static_cast<OrbitCamera*>(glfwGetWindowUserPointer(window));
+    if (cam != nullptr) {
+        cam->onScroll(offsetX, offsetY);
+    }
 }
