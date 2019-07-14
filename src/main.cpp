@@ -5,7 +5,8 @@
 #include <GLFW/glfw3.h>
 
 #include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include "shader.h"
 
@@ -34,6 +35,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // Enable vsync
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -41,7 +43,13 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    ImGui_ImplGlfwGL3_Init(window, true);
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 
 
     Shader basicShader("shaders/basic.vs.glsl", "shaders/basic.fs.glsl");
@@ -84,7 +92,9 @@ int main(int argc, char** argv) {
     glBindVertexArray(0);
 
     while (!glfwWindowShouldClose(window)) {
-        ImGui_ImplGlfwGL3_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         processInput(window);
 
         glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
@@ -112,6 +122,7 @@ int main(int argc, char** argv) {
         }
 
         ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -121,7 +132,9 @@ int main(int argc, char** argv) {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
-    ImGui_ImplGlfwGL3_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
