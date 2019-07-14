@@ -16,3 +16,5 @@ add_library(
     stb_textedit.h
     stb_truetype.h
 )
+
+target_link_libraries(imgui glfw)
