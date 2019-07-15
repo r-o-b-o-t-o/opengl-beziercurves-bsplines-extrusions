@@ -22,8 +22,7 @@ void Application::refreshCasteljau() {
 
     std::vector<Point> points;
     this->controlPointsToCasteljauPoints(points);
-    std::vector<std::vector<Point>> vec;
-    this->casteljau.pointsTo2DVec(points, vec);
+    auto vec = this->casteljau.pointsTo2DVec(points);
     this->casteljau.algorithm(vec, this->step);
     auto vertices = this->casteljau.getVertices();
 

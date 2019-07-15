@@ -61,11 +61,15 @@ void Casteljau::algorithm(std::vector<std::vector<Point>> &tab, float distMin) {
     algorithm(tab3, distMin);
 }
 
-void Casteljau::pointsTo2DVec(const std::vector<Point> &points, std::vector<std::vector<Point>> &target) const {
+std::vector<std::vector<Point>> Casteljau::pointsTo2DVec(const std::vector<Point> &points) const {
     int N = points.size();
+    std::vector<std::vector<Point>> tab(N, std::vector<Point>(N));
+
     for (int i = 0; i < N; ++i) {
-        target[0][i] = points[i];
+        tab[0][i] = points[i];
     }
+
+    return tab;
 }
 
 std::vector<float> &Casteljau::getVertices() {
