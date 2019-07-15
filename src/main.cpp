@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     ImGuiIO &io = ImGui::GetIO();
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init();
+    ImGui_ImplOpenGL3_Init("#version 130");
 
     double currentFrame, lastFrame, deltaTime;
     Application app;
@@ -212,8 +212,9 @@ void onClick(GLFWwindow* window, int button, int action, int mods) {
         glBufferData(GL_ARRAY_BUFFER, size * sizeof(float), app->vertices.data(), GL_DYNAMIC_DRAW);
 
         if (size / 6 > 2) {
+            auto point = app->verticesToCasteljauPoints();
             auto points = app->casteljau.pointsTo2DVec(app->verticesToCasteljauPoints());
-            app->casteljau.algorithm(points);
+            app->casteljau.algorithm(points, 0.1f);
             auto vec = app->casteljau.getPointsToShow();
             for (auto &p : vec) {
                 std::cout << p.getX() << " ; " << p.getY() << std::endl;
