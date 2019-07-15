@@ -6,10 +6,13 @@
 
 class Casteljau {
 public:
-    void algorithm(std::vector<std::vector<Point>> tab) const;
+    void algorithm(std::vector<std::vector<Point>> tab);
     std::vector<std::vector<Point>> pointsTo2DVec(std::vector<Point> points) const;
+
+    std::vector<Point> getPointsToShow() const;
     
 private:
+    std::vector<Point> pointsToShow;
 };
 
 

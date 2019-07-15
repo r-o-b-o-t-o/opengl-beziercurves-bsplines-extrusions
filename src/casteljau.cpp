@@ -1,6 +1,6 @@
 #include "casteljau.h"
 
-void Casteljau::algorithm(std::vector<std::vector<Point>> tab) const {
+void Casteljau::algorithm(std::vector<std::vector<Point>> tab) {
     int N = tab[0].size();
     for (int i = 0; i < N; ++i){
         if (tab[0][0] != tab[0][i]) //si le critère d'arrêt est vérifié on s'arrête
@@ -19,6 +19,7 @@ void Casteljau::algorithm(std::vector<std::vector<Point>> tab) const {
     std::vector<std::vector<Point>> tab3(N, std::vector<Point>(N));
 
     //Afficher T[N][0] // Afficher (ou stocker) le point milieu
+    this->pointsToShow.push_back(tab[N-1][0]);
 
     // Construction des courbes restreintes
     for (int i = 0; i < N; ++i){
@@ -43,4 +44,8 @@ std::vector<std::vector<Point>> Casteljau::pointsTo2DVec(std::vector<Point> poin
     }
 
     return tab;
+}
+
+std::vector<Point> Casteljau::getPointsToShow() const {
+    return this->pointsToShow;
 }
