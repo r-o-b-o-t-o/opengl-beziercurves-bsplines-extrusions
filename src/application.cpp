@@ -6,14 +6,25 @@ Application::Application() :
         camera(nullptr),
         flatMode(true),
         step(0.05f),
-        pointSize(10.0f) {
+        pointSize(10.0f),
+        isDraggingControlPoint(false),
+        draggedControlPoint(-1) {
 
 }
 
 void Application::controlPointsToCasteljauPoints(std::vector<Point> &target) const {
     auto size = static_cast<int>(this->controlPoints.size());
-    for (int i = 0; i < size; i += 6) {
+    for (int i = 0; i < size; i += 3) {
         target.emplace_back(this->controlPoints[i], this->controlPoints[i + 1]);
+    }
+}
+
+void Application::refreshControlPoints() {
+    glBindBuffer(GL_ARRAY_BUFFER, this->controlPointsVbo);
+    glBufferData(GL_ARRAY_BUFFER, this->controlPoints.size() * sizeof(float), this->controlPoints.data(), GL_STREAM_DRAW);
+
+    if (this->controlPoints.size() / 3 > 2) {
+        this->refreshCasteljau();
     }
 }
 
@@ -27,5 +38,5 @@ void Application::refreshCasteljau() {
     auto vertices = this->casteljau.getVertices();
 
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STREAM_DRAW);
 }

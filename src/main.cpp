@@ -16,7 +16,7 @@
 #include "application.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(Application* app, GLFWwindow* window);
 void onError(int error, const char* description);
 void onScroll(GLFWwindow* window, double offsetX, double offsetY);
 void onClick(GLFWwindow* window, int button, int action, int mods);
@@ -66,6 +66,8 @@ int main(int argc, char** argv) {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
     Shader flatShader("shaders/flat.vs.glsl", "shaders/flat.fs.glsl");
     flatShader.setFloat("pointSize", app.pointSize);
+    Shader controlPointsShader("shaders/flat.vs.glsl", "shaders/controlPoints.fs.glsl");
+    controlPointsShader.setFloat("pointSize", app.pointSize + 10.0f);
     Shader basicShader("shaders/basic.vs.glsl", "shaders/basic.fs.glsl");
 
     unsigned int VAO;
@@ -90,6 +92,14 @@ int main(int argc, char** argv) {
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
+    glGenVertexArrays(1, &app.controlPointsVao);
+    glGenBuffers(1, &app.controlPointsVbo);
+    glBindVertexArray(app.controlPointsVao);
+    glBindBuffer(GL_ARRAY_BUFFER, app.controlPointsVbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -97,7 +107,7 @@ int main(int argc, char** argv) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        processInput(window);
+        processInput(&app, window);
 
         currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -126,9 +136,17 @@ int main(int argc, char** argv) {
 
             mode = GL_TRIANGLES;
         }
-        if (app.controlPoints.size() / 6 > 2) {
+        if (app.controlPoints.size() / 3 > 2) {
             glBindVertexArray(VAO);
             glDrawArrays(mode, 0, app.casteljau.getVertices().size() / 6);
+            glBindVertexArray(0);
+        }
+        if (app.controlPoints.size() > 0) {
+            controlPointsShader.use();
+            controlPointsShader.setMat4("model", local);
+            glBindVertexArray(app.controlPointsVao);
+            glDrawArrays(GL_POINTS, 0, app.controlPoints.size() / 3);
+            glBindVertexArray(0);
         }
 
         {
@@ -136,11 +154,12 @@ int main(int argc, char** argv) {
 
             ImGui::Checkbox("2D Mode", &app.flatMode);
             if (app.flatMode) {
-                if (ImGui::SliderFloat("Step", &app.step, 0.001f, 0.1f, "%.3f") && app.controlPoints.size() / 6 > 2) {
+                if (ImGui::SliderFloat("Step", &app.step, 0.0005f, 0.2f, "%.4f") && app.controlPoints.size() / 3 > 2) {
                     app.refreshCasteljau();
                 }
                 if (ImGui::SliderFloat("Point size", &app.pointSize, 0.1f, 40.0f, "%.1f")) {
                     flatShader.setFloat("pointSize", app.pointSize);
+                    controlPointsShader.setFloat("pointSize", app.pointSize + 10.0f);
                 }
             }
 
@@ -160,6 +179,7 @@ int main(int argc, char** argv) {
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &app.vbo);
+    glDeleteBuffers(1, &app.controlPointsVbo);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -173,9 +193,45 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(Application* app, GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    if (!ImGui::IsMouseHoveringAnyWindow() && !ImGui::GetIO().WantCaptureMouse) {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            double curX, curY;
+            float halfSizeX = (app->pointSize + 10.0f) / SCR_WIDTH;
+            float halfSizeY = (app->pointSize + 10.0f) / SCR_HEIGHT;
+            glfwGetCursorPos(window, &curX, &curY);
+            curX = 2.0f * curX / SCR_WIDTH - 1.0f;
+            curY = -(2.0f * curY / SCR_HEIGHT - 1.0f);
+
+            if (app->draggedControlPoint == -1) {
+                for (unsigned int i = 0; i < app->controlPoints.size(); i += 3) {
+                    float x = app->controlPoints[i];
+                    float y = app->controlPoints[i + 1];
+
+                    if (curX >= x - halfSizeX && curX <= x + halfSizeX &&
+                        curY >= y - halfSizeY && curY <= y + halfSizeY) {
+
+                        app->isDraggingControlPoint = true;
+                        app->draggedControlPoint = i;
+                        break;
+                    }
+                }
+            }
+
+            if (app->isDraggingControlPoint) {
+                int idx = app->draggedControlPoint;
+                app->controlPoints[idx] = curX;
+                app->controlPoints[idx + 1] = curY;
+                app->refreshControlPoints();
+            }
+        } else {
+            app->isDraggingControlPoint = false;
+            app->draggedControlPoint = -1;
+        }
     }
 }
 
@@ -189,11 +245,11 @@ void onScroll(GLFWwindow* window, double offsetX, double offsetY) {
 }
 
 void onClick(GLFWwindow* window, int button, int action, int mods) {
-    if (ImGui::IsMouseHoveringAnyWindow() || ImGui::GetIO().WantCaptureMouse) {
+    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+
+    if (ImGui::IsMouseHoveringAnyWindow() || ImGui::GetIO().WantCaptureMouse || app->isDraggingControlPoint) {
         return;
     }
-
-    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
 
     if (app->flatMode && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         double x, y;
@@ -201,21 +257,8 @@ void onClick(GLFWwindow* window, int button, int action, int mods) {
 
         app->controlPoints.emplace_back(2.0f * x / SCR_WIDTH - 1.0f); // x
         app->controlPoints.emplace_back(-(2.0f * y / SCR_HEIGHT - 1.0f)); // y
-        app->controlPoints.emplace_back(0.0f); // z
-        app->controlPoints.emplace_back(0.0f); // r
-        app->controlPoints.emplace_back(1.0f); // g
-        app->controlPoints.emplace_back(0.0f); // b
+        app->controlPoints.emplace_back(-0.1f); // z
 
-        std::size_t size = app->controlPoints.size();
-        float color = 0.0f;
-        for (int i = 0; i < static_cast<int>(size); i += 6) {
-            app->controlPoints[i + 3] = color;
-            app->controlPoints[i + 4] = 1.0f - color;
-            color += 1.0f / (static_cast<float>(size) / 6.0f);
-        }
-
-        if (size / 6 > 2) {
-            app->refreshCasteljau();
-        }
+        app->refreshControlPoints();
     }
 }

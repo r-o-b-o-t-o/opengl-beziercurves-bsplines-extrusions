@@ -12,12 +12,17 @@ public:
 
     OrbitCamera* camera;
     GLuint vbo;
+    GLuint controlPointsVao;
+    GLuint controlPointsVbo;
     Casteljau casteljau;
     std::vector<GLfloat> controlPoints;
     bool flatMode;
     float step;
     float pointSize;
+    bool isDraggingControlPoint;
+    int draggedControlPoint;
 
+    void refreshControlPoints();
     void refreshCasteljau();
 
 private:
