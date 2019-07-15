@@ -11,6 +11,7 @@ public:
     void setY(float);
 
     bool operator!=(const Point &other);
+    bool operator==(const Point &other);
 private:
     float x;
     float y;

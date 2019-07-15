@@ -2,9 +2,10 @@
 
 void Casteljau::algorithm(std::vector<std::vector<Point>> tab) {
     int N = tab[0].size();
-    for (int i = 0; i < N; ++i){
-        if (tab[0][0] != tab[0][i]) //si le critère d'arrêt est vérifié on s'arrête
+    for (int i = 0; i < N; ++i) {
+        if (tab[0][0] == tab[0][i]) { //si le critère d'arrêt est vérifié on s'arrête
             return;
+        }
     }
     // Calcul des points intermédiaires
     for (int i = 1; i < N; ++i){
@@ -22,7 +23,7 @@ void Casteljau::algorithm(std::vector<std::vector<Point>> tab) {
     this->pointsToShow.push_back(tab[N-1][0]);
 
     // Construction des courbes restreintes
-    for (int i = 0; i < N; ++i){
+    for (int i = 0; i < N; ++i) {
         tab2[i][0] = tab[i][0];
         tab3[i][0] = tab[N-i][i];
         //T'[i] = T[i][0]
@@ -46,6 +47,6 @@ std::vector<std::vector<Point>> Casteljau::pointsTo2DVec(std::vector<Point> poin
     return tab;
 }
 
-std::vector<Point> Casteljau::getPointsToShow() const {
+std::vector<Point> &Casteljau::getPointsToShow() {
     return this->pointsToShow;
 }

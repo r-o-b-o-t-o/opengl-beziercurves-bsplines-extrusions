@@ -24,7 +24,12 @@ void Point::setY(float y) {
 }
 
 bool Point::operator!=(const Point &other){
-    if (this->x != other.getX() || this->y != other.getY())
+    return !(*this == other);
+}
+
+bool Point::operator==(const Point &other){
+    if (this->x == other.getX() && this->y == other.getY()) {
         return true;
+    }
     return false;
 }

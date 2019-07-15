@@ -11,7 +11,7 @@ OrbitCamera::OrbitCamera(float distance) :
 }
 
 void OrbitCamera::update(GLFWwindow* window, double dt) {
-    bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS;
+    bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     if (mousePressed) {
         double mouseX, mouseY;
         glfwGetCursorPos(window, &mouseX, &mouseY);
