@@ -86,20 +86,24 @@ int Shader::getUniformLocation(const std::string &name) const {
 
 void Shader::setBool(const std::string &name, bool value) const {
     int location = this->getUniformLocation(name);
+    this->use();
     glUniform1i(location, static_cast<int>(value));
 }
 
 void Shader::setInt(const std::string &name, int value) const {
     int location = this->getUniformLocation(name);
+    this->use();
     glUniform1i(location, value);
 }
 
 void Shader::setFloat(const std::string &name, float value) const {
     int location = this->getUniformLocation(name);
+    this->use();
     glUniform1f(location, value);
 }
 
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
     int location = this->getUniformLocation(name);
+    this->use();
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 }

@@ -52,7 +52,6 @@ int main(int argc, char** argv) {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -66,6 +65,7 @@ int main(int argc, char** argv) {
     glfwSetMouseButtonCallback(window, onClick);
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
     Shader flatShader("shaders/flat.vs.glsl", "shaders/flat.fs.glsl");
+    flatShader.setFloat("pointSize", app.pointSize);
     Shader basicShader("shaders/basic.vs.glsl", "shaders/basic.fs.glsl");
 
     unsigned int VAO;
@@ -117,7 +117,6 @@ int main(int argc, char** argv) {
         if (app.flatMode) {
             flatShader.use();
             flatShader.setMat4("model", local);
-
             mode = GL_POINTS;
         } else {
             basicShader.use();
@@ -127,19 +126,26 @@ int main(int argc, char** argv) {
 
             mode = GL_TRIANGLES;
         }
-        glBindVertexArray(VAO);
-        glDrawArrays(mode, 0, app.vertices.size() / 6);
+        if (app.controlPoints.size() / 6 > 2) {
+            glBindVertexArray(VAO);
+            glDrawArrays(mode, 0, app.casteljau.getVertices().size() / 6);
+        }
 
         {
             ImGui::Begin("Settings");
 
             ImGui::Checkbox("2D Mode", &app.flatMode);
             if (app.flatMode) {
-                ImGui::SliderInt("Step", &app.step, 0, 10);
+                if (ImGui::SliderFloat("Step", &app.step, 0.001f, 0.1f, "%.3f") && app.controlPoints.size() / 6 > 2) {
+                    app.refreshCasteljau();
+                }
+                if (ImGui::SliderFloat("Point size", &app.pointSize, 0.1f, 40.0f, "%.1f")) {
+                    flatShader.setFloat("pointSize", app.pointSize);
+                }
             }
 
-            if (ImGui::Button("Button")) {
-                std::cout << "Clicked" << std::endl;
+            if (ImGui::Button("Clear")) {
+                app.controlPoints.clear();
             }
 
             ImGui::End();
@@ -193,33 +199,23 @@ void onClick(GLFWwindow* window, int button, int action, int mods) {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
 
-        app->vertices.emplace_back(2.0f * x / SCR_WIDTH - 1.0f); // x
-        app->vertices.emplace_back(-(2.0f * y / SCR_HEIGHT - 1.0f)); // y
-        app->vertices.emplace_back(0.0f); // z
-        app->vertices.emplace_back(0.0f); // r
-        app->vertices.emplace_back(1.0f); // g
-        app->vertices.emplace_back(0.0f); // b
+        app->controlPoints.emplace_back(2.0f * x / SCR_WIDTH - 1.0f); // x
+        app->controlPoints.emplace_back(-(2.0f * y / SCR_HEIGHT - 1.0f)); // y
+        app->controlPoints.emplace_back(0.0f); // z
+        app->controlPoints.emplace_back(0.0f); // r
+        app->controlPoints.emplace_back(1.0f); // g
+        app->controlPoints.emplace_back(0.0f); // b
 
-        std::size_t size = app->vertices.size();
+        std::size_t size = app->controlPoints.size();
         float color = 0.0f;
         for (int i = 0; i < static_cast<int>(size); i += 6) {
-            app->vertices[i + 3] = color;
-            app->vertices[i + 4] = 1.0f - color;
+            app->controlPoints[i + 3] = color;
+            app->controlPoints[i + 4] = 1.0f - color;
             color += 1.0f / (static_cast<float>(size) / 6.0f);
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, app->vbo);
-        glBufferData(GL_ARRAY_BUFFER, size * sizeof(float), app->vertices.data(), GL_DYNAMIC_DRAW);
-
         if (size / 6 > 2) {
-            auto point = app->verticesToCasteljauPoints();
-            auto points = app->casteljau.pointsTo2DVec(app->verticesToCasteljauPoints());
-            app->casteljau.algorithm(points, 0.1f);
-            auto vec = app->casteljau.getPointsToShow();
-            for (auto &p : vec) {
-                std::cout << p.getX() << " ; " << p.getY() << std::endl;
-            }
-            std::cout << "========" << std::endl;
+            app->refreshCasteljau();
         }
     }
 }

@@ -13,11 +13,15 @@ public:
     OrbitCamera* camera;
     GLuint vbo;
     Casteljau casteljau;
-    std::vector<GLfloat> vertices;
+    std::vector<GLfloat> controlPoints;
     bool flatMode;
-    int step;
+    float step;
+    float pointSize;
 
-    std::vector<Point> verticesToCasteljauPoints() const;
+    void refreshCasteljau();
+
+private:
+    void controlPointsToCasteljauPoints(std::vector<Point> &target) const;
 };
 
 #endif

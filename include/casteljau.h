@@ -6,14 +6,14 @@
 
 class Casteljau {
 public:
-    void algorithm(std::vector<std::vector<Point>> tab, float distMin);
-    float distance(Point a, Point b);
-    std::vector<std::vector<Point>> pointsTo2DVec(std::vector<Point> points) const;
+    void algorithm(std::vector<std::vector<Point>> &tab, float distMin);
+    float distance(const Point &a, const Point &b);
+    void pointsTo2DVec(const std::vector<Point> &points, std::vector<std::vector<Point>> &target) const;
 
-    std::vector<Point> &getPointsToShow();
+    std::vector<float> &getVertices();
 
 private:
-    std::vector<Point> pointsToShow;
+    std::vector<float> vertices;
 };
 
 
