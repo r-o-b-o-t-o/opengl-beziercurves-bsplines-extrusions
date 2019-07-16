@@ -53,12 +53,16 @@ void OrbitCamera::zoom(float offset) {
 }
 
 glm::mat4 OrbitCamera::getViewMatrix() const {
-    float x = this->distance * std::cos(this->theta) * std::cos(this->phi);
-    float y = this->distance * std::sin(this->theta);
-    float z = this->distance * std::cos(this->theta) * std::sin(this->phi);
-
-    glm::vec3 pos(x, y, z);
+    glm::vec3 pos = this->getPosition();
     glm::vec3 target(0.0f, 0.0f, 0.0f);
     glm::vec3 up(0.0f, 1.0f, 0.0f);
     return glm::lookAt(pos, target, up);
+}
+
+glm::vec3 OrbitCamera::getPosition() const {
+    return glm::vec3(
+        this->distance * std::cos(this->theta) * std::cos(this->phi),
+        this->distance * std::sin(this->theta),
+        this->distance * std::cos(this->theta) * std::sin(this->phi)
+    );
 }

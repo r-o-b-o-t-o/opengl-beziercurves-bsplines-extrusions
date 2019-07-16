@@ -22,7 +22,7 @@ void onScroll(GLFWwindow* window, double offsetX, double offsetY);
 void onClick(GLFWwindow* window, int button, int action, int mods);
 
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
 
 int main(int argc, char** argv) {
     glfwSetErrorCallback(onError);

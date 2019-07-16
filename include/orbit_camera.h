@@ -10,6 +10,7 @@ public:
 
     void update(GLFWwindow* window, double dt);
     glm::mat4 getViewMatrix() const;
+    glm::vec3 getPosition() const;
 
     void onScroll(double offsetX, double offsetY);
 

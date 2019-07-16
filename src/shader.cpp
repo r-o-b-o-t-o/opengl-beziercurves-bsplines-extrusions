@@ -102,6 +102,16 @@ void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(location, value);
 }
 
+void Shader::setVec3(const std::string &name, const glm::vec3 &vec) const {
+    this->setVec3(name, vec.x, vec.y, vec.z);
+}
+
+void Shader::setVec3(const std::string &name, float x, float y, float z) const {
+    int location = this->getUniformLocation(name);
+    this->use();
+    glUniform3f(location, x, y, z);
+}
+
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
     int location = this->getUniformLocation(name);
     this->use();
