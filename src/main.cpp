@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 
     double currentFrame, lastFrame, deltaTime;
     Application app;
-    OrbitCamera camera(10.0f);
+    OrbitCamera camera(10.0f, glm::vec3(0.0f));
     app.camera = &camera;
     glfwSetWindowUserPointer(window, &app);
     glfwSetScrollCallback(window, onScroll);

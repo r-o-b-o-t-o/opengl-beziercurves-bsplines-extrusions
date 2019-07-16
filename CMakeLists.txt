@@ -36,6 +36,12 @@ add_executable(
     "src/casteljau.cpp"
     "src/de_boor.cpp"
     "src/application.cpp"
+    "src/scene.cpp"
+    "src/phong_material.cpp"
+    "src/object.cpp"
+    "src/light.cpp"
+    "src/point_light.cpp"
+    "src/directional_light.cpp"
 )
 target_link_libraries(mathsopengl imgui ${OPENGL_LIBRARIES} ${GLFW_LIBRARY_DIRS} ${EXTRA_LIBS} dl glfw)
 
