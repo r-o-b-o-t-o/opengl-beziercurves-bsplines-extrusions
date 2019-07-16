@@ -7,6 +7,9 @@
 #include "casteljau.h"
 #include "de_boor.h"
 
+#define ALGO_CASTELJAU "Casteljau"
+#define ALGO_COX_DE_BOOR "Cox de Boor"
+
 class Application {
 public:
     Application();
@@ -23,10 +26,10 @@ public:
     float pointSize;
     bool isDraggingControlPoint;
     int draggedControlPoint;
+    const char* algorithm;
 
     void refreshControlPoints();
-    void refreshCasteljau();
-    void refreshDeBoor();
+    void refresh();
 
 private:
     void controlPointsToCasteljauPoints(std::vector<Point> &target) const;

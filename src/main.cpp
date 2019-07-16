@@ -155,16 +155,38 @@ int main(int argc, char** argv) {
             ImGui::Checkbox("2D Mode", &app.flatMode);
             if (app.flatMode) {
                 if (ImGui::SliderFloat("Step", &app.step, 0.0005f, 0.2f, "%.4f") && app.controlPoints.size() / 3 > 2) {
-                    app.refreshCasteljau();
+                    app.refresh();
                 }
                 if (ImGui::SliderFloat("Point size", &app.pointSize, 0.1f, 40.0f, "%.1f")) {
                     flatShader.setFloat("pointSize", app.pointSize);
                     controlPointsShader.setFloat("pointSize", app.pointSize + 10.0f);
                 }
-            }
 
-            if (ImGui::Button("Clear")) {
-                app.controlPoints.clear();
+                {
+                    static const char* items[] = { ALGO_CASTELJAU, ALGO_COX_DE_BOOR };
+                    if (ImGui::BeginCombo("Algorithm", app.algorithm)) {
+                        for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
+                            bool isSelected = (strcmp(items[n], app.algorithm) == 0);
+                            if (ImGui::Selectable(items[n], isSelected)) {
+                                app.algorithm = items[n];
+                                app.refresh();
+                            }
+                            if (isSelected) {
+                                ImGui::SetItemDefaultFocus();
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+
+                if (ImGui::Button("Next shape")) {
+                    
+                }
+                ImGui::SameLine();
+
+                if (ImGui::Button("Clear")) {
+                    app.controlPoints.clear();
+                }
             }
 
             ImGui::End();
