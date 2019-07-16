@@ -1,5 +1,5 @@
 #ifndef SHAPE_H
-#define SHAPE_h
+#define SHAPE_H
 
 #include <vector>
 

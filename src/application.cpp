@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#include <cstring>
-#include "glad/glad.h"
-#include <iostream>
-
-=======
->>>>>>> 8ede9ac79769926f67797a6b5dbd0febe4e7a2bb
 #include "application.h"
 #include "shape.h"
 
@@ -40,7 +33,7 @@ void Application::deleteBuffers() {
 
 void Application::setPointSize(float v) {
     this->pointSize = v;
-    
+
     for (Shape &shape : this->shapes) {
         shape.setPointSize(v);
     }
