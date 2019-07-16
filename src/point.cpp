@@ -23,6 +23,15 @@ void Point::setY(float y) {
     this->y = y;
 }
 
+Point Point::operator+(const Point &other) {
+    return Point(this->x+other.getX(), this->y+other.getY());
+}
+
+Point Point::operator*(float other){
+    
+    return Point(this->x*other, this->y*other);
+}
+
 bool Point::operator!=(const Point &other){
     return !(*this == other);
 }

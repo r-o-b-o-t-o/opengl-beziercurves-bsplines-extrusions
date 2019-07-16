@@ -5,6 +5,7 @@
 
 #include "orbit_camera.h"
 #include "casteljau.h"
+#include "de_boor.h"
 
 class Application {
 public:
@@ -15,6 +16,7 @@ public:
     GLuint controlPointsVao;
     GLuint controlPointsVbo;
     Casteljau casteljau;
+    DeBoor deboor;
     std::vector<GLfloat> controlPoints;
     bool flatMode;
     float step;
@@ -24,9 +26,11 @@ public:
 
     void refreshControlPoints();
     void refreshCasteljau();
+    void refreshDeBoor();
 
 private:
     void controlPointsToCasteljauPoints(std::vector<Point> &target) const;
+    void controlPointsToDeBoorPoints(std::vector<Point> &target) const;
 };
 
 #endif

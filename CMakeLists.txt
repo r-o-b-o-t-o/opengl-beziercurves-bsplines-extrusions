@@ -34,6 +34,7 @@ add_executable(
     "src/orbit_camera.cpp"
     "src/point.cpp"
     "src/casteljau.cpp"
+    "src/de_boor.cpp"
     "src/application.cpp"
 )
 target_link_libraries(mathsopengl imgui ${OPENGL_LIBRARIES} ${GLFW_LIBRARY_DIRS} ${EXTRA_LIBS} dl glfw)

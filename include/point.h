@@ -10,6 +10,8 @@ public:
     void setX(float);
     void setY(float);
 
+    Point operator+(const Point &other);
+    Point operator*(float other);
     bool operator!=(const Point &other);
     bool operator==(const Point &other);
 private:
