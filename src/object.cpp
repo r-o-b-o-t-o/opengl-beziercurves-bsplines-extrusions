@@ -1,3 +1,5 @@
+#include "glad/glad.h"
+
 #include "object.h"
 
 Object::Object(float* vertices, int nbVertices) :

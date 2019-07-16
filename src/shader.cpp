@@ -1,13 +1,14 @@
-#include "shader.h"
-
+#include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+#include "shader.h"
+
+Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vsCode = this->readShaderFile(vertexPath);
-    const GLchar* vsCodeC = vsCode.c_str();
+    const char* vsCodeC = vsCode.c_str();
     std::string fsCode = this->readShaderFile(fragmentPath);
-    const GLchar* fsCodeC = fsCode.c_str();
+    const char* fsCodeC = fsCode.c_str();
 
     // 2. Compile shaders
     unsigned int vertex, fragment;

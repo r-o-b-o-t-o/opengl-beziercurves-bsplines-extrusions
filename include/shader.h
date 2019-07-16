@@ -6,12 +6,11 @@
 #include <sstream>
 #include <iostream>
 
-#include "glad/glad.h"
 #include "glm/glm.hpp"
 
 class Shader {
 public:
-    Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+    Shader(const char* vertexPath, const char* fragmentPath);
     void use() const;
 
     unsigned int getId() const;
