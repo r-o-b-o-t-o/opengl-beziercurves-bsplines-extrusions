@@ -6,7 +6,7 @@
 
 class OrbitCamera {
 public:
-    explicit OrbitCamera(float distance);
+    explicit OrbitCamera(float distance, glm::vec3 target);
 
     void update(GLFWwindow* window, double dt);
     glm::mat4 getViewMatrix() const;
@@ -18,6 +18,7 @@ private:
     float distance;
     float phi;
     float theta;
+    glm::vec3 target;
 
     double lastMouseX;
     double lastMouseY;

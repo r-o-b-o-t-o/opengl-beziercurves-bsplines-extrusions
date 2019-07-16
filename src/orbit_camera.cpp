@@ -1,10 +1,11 @@
 #include "orbit_camera.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-OrbitCamera::OrbitCamera(float distance) :
+OrbitCamera::OrbitCamera(float distance, glm::vec3 target) :
         distance(distance),
         phi(0.0f),
         theta(0.0f),
+        target(target),
         sensitivityX(0.75f),
         sensitivityY(0.75f) {
 
