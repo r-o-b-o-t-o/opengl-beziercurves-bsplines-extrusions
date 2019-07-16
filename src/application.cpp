@@ -1,5 +1,6 @@
 #include <cstring>
 #include "glad/glad.h"
+#include <iostream>
 
 #include "application.h"
 
@@ -58,6 +59,11 @@ void Application::refresh() {
         auto vec = this->deboor.pointsTo2DVec(points);
         this->deboor.fillVertices(vec, this->step);
         vertices = this->deboor.getVertices();
+
+        std::cout << "Printing vertices"<< std::endl;
+        for (auto it = 0; it < vertices.size(); it+=6){
+            std::cout << "X = " << vertices[it] << ", Y = " << vertices[it+1] << std::endl;
+        }
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
