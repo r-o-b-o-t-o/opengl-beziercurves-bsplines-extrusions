@@ -42,6 +42,7 @@ add_executable(
     "src/light.cpp"
     "src/point_light.cpp"
     "src/directional_light.cpp"
+    "src/shape.cpp"
 )
 target_link_libraries(mathsopengl imgui ${OPENGL_LIBRARIES} ${GLFW_LIBRARY_DIRS} ${EXTRA_LIBS} dl glfw)
 

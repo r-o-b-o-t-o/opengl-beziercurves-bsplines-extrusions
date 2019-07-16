@@ -1,7 +1,6 @@
-#include "casteljau.h"
-#include <iostream>
 #include <cmath>
 
+#include "casteljau.h"
 
 float Casteljau::distance(const Point &a, const Point &b) {
     return std::sqrt(std::pow(b.getX() - a.getX(), 2.0f) + std::pow(b.getY() - a.getY(), 2.0f));

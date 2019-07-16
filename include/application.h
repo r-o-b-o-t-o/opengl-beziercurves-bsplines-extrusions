@@ -10,30 +10,33 @@
 #define ALGO_CASTELJAU "Casteljau"
 #define ALGO_COX_DE_BOOR "Cox de Boor"
 
+class Shape;
+
 class Application {
 public:
     Application();
 
     OrbitCamera* camera;
-    GLuint vbo;
-    GLuint controlPointsVao;
-    GLuint controlPointsVbo;
     Casteljau casteljau;
     DeBoor deboor;
-    std::vector<GLfloat> controlPoints;
-    bool flatMode;
     float step;
-    float pointSize;
+    std::vector<Shape> shapes;
+    bool flatMode;
     bool isDraggingControlPoint;
+    int draggedShape;
     int draggedControlPoint;
     const char* algorithm;
 
     void refreshControlPoints();
     void refresh();
+    void deleteBuffers();
+
+    float getPointSize();
+    void setPointSize(float v);
+    void newShape();
 
 private:
-    void controlPointsToCasteljauPoints(std::vector<Point> &target) const;
-    void controlPointsToDeBoorPoints(std::vector<Point> &target) const;
+    float pointSize;
 };
 
 #endif
