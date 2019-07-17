@@ -95,6 +95,7 @@ void Shape::draw() const {
         this->curveShader.setMat4("model", local);
         glBindVertexArray(this->curveVao);
         glDrawArrays(GL_POINTS, 0, this->vertices.size() / 3);
+        glDrawArrays(GL_LINES, 0, this->vertices.size() / 3);
         glBindVertexArray(0);
     }
     if (this->controlPoints.size() > 0) {

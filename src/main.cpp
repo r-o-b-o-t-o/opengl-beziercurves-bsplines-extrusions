@@ -313,7 +313,7 @@ void drawUi(Application &app) {
         }
         ImGui::SameLine();
 
-        if (ImGui::Button("Clear")) {
+        if (ImGui::Button("Clear") && app.shapes.size() > 0) {
             app.shapes[app.shapes.size() - 1].controlPoints.clear();
         }
         ImGui::SameLine();
