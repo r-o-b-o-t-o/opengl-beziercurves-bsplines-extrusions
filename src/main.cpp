@@ -15,6 +15,7 @@
 #include "shader.h"
 #include "application.h"
 #include "scene.h"
+#include "cube.h"
 #include "shape.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
@@ -23,6 +24,7 @@ void onError(int error, const char* description);
 void onScroll(GLFWwindow* window, double offsetX, double offsetY);
 void onClick(GLFWwindow* window, int button, int action, int mods);
 void drawUi(Application &app);
+void switchTo3DView(Application &app);
 void updateScene(Application &app);
 
 unsigned int scrWidth = 800;
@@ -98,57 +100,14 @@ int main(int argc, char** argv) {
     ));
 
     {
-        float vertices[] = {
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-        };
-
-        Object cube(vertices, sizeof(vertices) / sizeof(float));
+        Cube cube;
         cube.setMaterial(PhongMaterial(
             glm::vec3(1.0f, 0.9f, 0.7f), // ambient
             glm::vec3(1.0f, 0.9f, 0.7f), // diffuse
             glm::vec3(0.5f, 0.5f, 0.5f), // specular
             32.0f // shininess
         ));
+        cube.enabled = false;
 
         scene.addObject(cube);
     }
@@ -307,10 +266,15 @@ void onClick(GLFWwindow* window, int button, int action, int mods) {
 void drawUi(Application &app) {
     ImGui::Begin("Settings");
 
-    ImGui::Checkbox("2D Mode", &app.flatMode);
+    if (ImGui::Checkbox("2D Mode", &app.flatMode)) {
+        if (!app.flatMode) {
+            switchTo3DView(app);
+        }
+    }
+
     if (app.flatMode) {
         float minStep = 0.0005f;
-        if (ImGui::SliderFloat("Step", &app.step, minStep, 0.2f, "%.4f")) {
+        if (ImGui::SliderFloat("Step", &app.step, minStep, 0.5f, "%.4f")) {
             if (app.step < minStep) {
                 app.step = minStep;
             }
@@ -356,6 +320,23 @@ void drawUi(Application &app) {
         if (ImGui::Button("Clear all")) {
             app.shapes.clear();
         }
+    } else {
+        static bool wireframe = false;
+        if (ImGui::Checkbox("Wireframe", &wireframe)) {
+            if (wireframe) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+        }
+
+        static bool testCube = false;
+        ImGui::NewLine();
+        ImGui::NewLine();
+        ImGui::NewLine();
+        if (ImGui::Checkbox("Test cube", &testCube)) {
+            app.scene->getObject(0).enabled = testCube;
+        }
     }
 
     ImGui::End();
@@ -367,4 +348,19 @@ void updateScene(Application &app) {
     pos.x = std::sin(glfwGetTime()) * 2.0f;
     pos.z = std::cos(glfwGetTime()) * 2.0f;
     light.setPosition(pos);
+}
+
+void switchTo3DView(Application &app) {
+    glm::mat4 local(1.0f);
+
+    app.scene->clearExtrudedObjects();
+
+    for (Shape &shape : app.shapes) {
+        if (shape.controlPoints.size() / 3 < 3) {
+            continue;
+        }
+
+        Extruded extruded = shape.extrude();
+        app.scene->addExtrudedObject(extruded);
+    }
 }

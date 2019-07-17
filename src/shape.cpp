@@ -129,3 +129,121 @@ void Shape::close(Application &app) {
     this->controlPoints.push_back(this->controlPoints[2]);
     this->refreshControlPoints(app);
 }
+
+Extruded Shape::extrude() const {
+    std::vector<float> verts;
+
+    int size = this->vertices.size();
+
+    glm::vec3 middle(0.0f);
+    for (int i = 0; i < size; i += 6) {
+        middle.x += this->vertices[i];
+        middle.y += this->vertices[i + 1];
+        middle.z += this->vertices[i + 2];
+    }
+    middle /= static_cast<float>(size) / 6.0f;
+
+    //// Base face
+    // Triangle fan center
+    verts.push_back(middle.x);
+    verts.push_back(middle.y);
+    verts.push_back(0.0f);
+    // normal
+    verts.push_back(0.0f);
+    verts.push_back(-1.0f);
+    verts.push_back(0.0f);
+
+    for (int i = 0; i < size; i += 6) {
+        // position
+        verts.push_back(this->vertices[i]);
+        verts.push_back(this->vertices[i + 1]);
+        verts.push_back(0.0f);
+        // normal
+        verts.push_back(0.0f);
+        verts.push_back(-1.0f);
+        verts.push_back(0.0f);
+    }
+    verts.push_back(this->vertices[0]);
+    verts.push_back(this->vertices[1]);
+    verts.push_back(this->vertices[2]);
+    verts.push_back(0.0f);
+    verts.push_back(-1.0f);
+    verts.push_back(0.0f);
+
+    int baseSize = verts.size();
+
+    //// Top face
+    float h = 2.0f;
+    float scaleX = 0.6f;
+    float scaleY = 0.6f;
+    for (int i = 0; i < baseSize; i += 6) {
+        verts.push_back(verts[i] * scaleX);
+        verts.push_back(verts[i + 1] * scaleY);
+        verts.push_back(verts[i + 2] + h);
+
+        verts.push_back(verts[i + 3] * -1.0f);
+        verts.push_back(verts[i + 4] * -1.0f);
+        verts.push_back(verts[i + 5] * -1.0f);
+    }
+
+    //// Side faces
+    for (int i = 6; i < baseSize; i += 6) { // begin at idx 6 since the first point is the center of the face
+        /*
+         d +----+ c
+           |  / |
+           | /  |
+         b +----+ a
+        */
+        int a = i;
+        int b = a + 6;
+        int c = a + baseSize;
+        int d = c + 6;
+
+        verts.push_back(verts[a]);
+        verts.push_back(verts[a + 1]);
+        verts.push_back(verts[a + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+
+        verts.push_back(verts[b]);
+        verts.push_back(verts[b + 1]);
+        verts.push_back(verts[b + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+
+        verts.push_back(verts[c]);
+        verts.push_back(verts[c + 1]);
+        verts.push_back(verts[c + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+
+        verts.push_back(verts[d]);
+        verts.push_back(verts[d + 1]);
+        verts.push_back(verts[d + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+
+        verts.push_back(verts[c]);
+        verts.push_back(verts[c + 1]);
+        verts.push_back(verts[c + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+
+        verts.push_back(verts[b]);
+        verts.push_back(verts[b + 1]);
+        verts.push_back(verts[b + 2]);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+        verts.push_back(0.0f);
+    }
+
+    Extruded obj(verts);
+    obj.baseSize = baseSize;
+    obj.sideSize = verts.size() - baseSize * 2;
+    return obj;
+}

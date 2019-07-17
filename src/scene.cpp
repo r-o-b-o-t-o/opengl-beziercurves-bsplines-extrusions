@@ -35,6 +35,22 @@ void Scene::addObject(Object &o) {
     }
 }
 
+void Scene::addExtrudedObject(Extruded &o) {
+    this->extrudedObjects.push_back(o);
+
+    int lights = this->pointLights.size();
+    o.getMaterial().getShader().setInt("nbPointLights", lights);
+    for (int i = 0; i < lights; ++i) {
+        this->updatePointLight(o, i);
+    }
+
+    lights = this->directionalLights.size();
+    o.getMaterial().getShader().setInt("nbDirectionalLights", lights);
+    for (int i = 0; i < lights; ++i) {
+        this->updateDirectionalLight(o, i);
+    }
+}
+
 Object &Scene::getObject(int idx) {
     return this->objects[idx];
 }
@@ -121,14 +137,44 @@ void Scene::update() {
             this->updateDirectionalLight(obj, i);
         }
     }
+
+    // TODO: factorise these loops
+    for (Extruded &obj : this->extrudedObjects) {
+        obj.update();
+
+        PhongMaterial &mat = obj.getMaterial();
+        Shader &shader = mat.getShader();
+        shader.setMat4("view", this->camera.getViewMatrix());
+        shader.setMat4("projection", this->projectionMatrix);
+        shader.setVec3("viewPosition", this->camera.getPosition());
+
+        shader.setVec3("material.ambient", mat.getAmbient());
+        shader.setVec3("material.diffuse", mat.getDiffuse());
+        shader.setVec3("material.specular", mat.getSpecular());
+        shader.setFloat("material.shininess", mat.getShininess());
+
+        for (int i = 0; i < nPoint; ++i) {
+            this->updatePointLight(obj, i);
+        }
+        for (int i = 0; i < nDirectional; ++i) {
+            this->updateDirectionalLight(obj, i);
+        }
+    }
 }
 
 void Scene::draw() {
     for (Object &obj : this->objects) {
         obj.draw();
     }
+    for (Extruded &obj : this->extrudedObjects) {
+        obj.draw();
+    }
 }
 
 void Scene::setAspectRatio(float ratio) {
     this->projectionMatrix = glm::perspective(glm::radians(fov), ratio, near, far);
+}
+
+void Scene::clearExtrudedObjects() {
+    this->extrudedObjects.clear();
 }

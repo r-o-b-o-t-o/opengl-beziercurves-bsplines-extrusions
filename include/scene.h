@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "object.h"
+#include "extruded.h"
 #include "orbit_camera.h"
 #include "point_light.h"
 #include "directional_light.h"
@@ -16,12 +17,14 @@ public:
     void setCamera(const OrbitCamera &camera);
     void addObject(Object &o);
     Object &getObject(int idx);
+    void addExtrudedObject(Extruded &o);
     void addPointLight(const PointLight &l);
     PointLight &getPointLight(int idx);
     void addDirectionalLight(const DirectionalLight &l);
     DirectionalLight &getDirectionalLight(int idx);
     glm::mat4 &getProjectionMatrix();
     void setAspectRatio(float ratio);
+    void clearExtrudedObjects();
 
     void update();
     void draw();
@@ -30,6 +33,7 @@ protected:
     glm::mat4 projectionMatrix;
     OrbitCamera camera;
     std::vector<Object> objects;
+    std::vector<Extruded> extrudedObjects;
     std::vector<PointLight> pointLights;
     std::vector<DirectionalLight> directionalLights;
 

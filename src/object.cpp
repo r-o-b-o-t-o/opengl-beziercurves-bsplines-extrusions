@@ -2,7 +2,9 @@
 
 #include "object.h"
 
-Object::Object(float* vertices, int nbVertices) :
+Object::Object(std::vector<float> vertices) :
+        enabled(true),
+        local(1.0f),
         material(
             glm::vec3(1.0f, 1.0f, 1.0f), // ambient
             glm::vec3(1.0f, 1.0f, 1.0f), // diffuse
@@ -10,15 +12,13 @@ Object::Object(float* vertices, int nbVertices) :
             32.0f // shininess
         ) {
 
-    for (int i = 0; i < nbVertices; ++i) {
-        this->vertices.push_back(vertices[i]);
-    }
+    this->vertices = vertices;
 
     glGenVertexArrays(1, &this->vao);
     glGenBuffers(1, &this->vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-    glBufferData(GL_ARRAY_BUFFER, nbVertices * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(this->vao);
 
@@ -40,15 +40,16 @@ PhongMaterial &Object::getMaterial() {
 }
 
 void Object::update() {
-    glm::mat4 local(1.0f);
-
-    this->material.getShader().setMat4("model", local);
+    this->material.getShader().setMat4("model", this->local);
 }
 
 void Object::draw() {
+    if (!this->enabled) {
+        return;
+    }
+
     this->material.getShader().use();
     glBindVertexArray(this->vao);
-    int tris = this->vertices.size() / 6;
-    glDrawArrays(GL_TRIANGLES, 0, tris);
+    glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() / 6);
     glBindVertexArray(0);
 }

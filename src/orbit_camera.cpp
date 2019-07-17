@@ -3,7 +3,7 @@
 
 OrbitCamera::OrbitCamera(float distance, glm::vec3 target) :
         distance(distance),
-        phi(0.0f),
+        phi(glm::radians(90.0f)),
         theta(0.0f),
         target(target),
         sensitivityX(0.75f),

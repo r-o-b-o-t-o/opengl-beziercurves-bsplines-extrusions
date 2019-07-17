@@ -7,14 +7,16 @@
 
 class Object {
 public:
-    explicit Object(float* vertices, int nbVertices);
+    explicit Object(std::vector<float> vertices);
     void setMaterial(const PhongMaterial &mat);
     PhongMaterial &getMaterial();
 
-    void update();
-    void draw();
+    virtual void update();
+    virtual void draw();
 
+    bool enabled;
     unsigned int vbo, vao;
+    glm::mat4 local;
     std::vector<float> vertices;
 
 protected:

@@ -5,6 +5,7 @@
 
 #include "point.h"
 #include "shader.h"
+#include "extruded.h"
 
 class Application;
 
@@ -28,6 +29,7 @@ public:
 
     void setPointSize(float v);
     void close(Application &app);
+    Extruded extrude() const;
 
     void deleteBuffers();
 
