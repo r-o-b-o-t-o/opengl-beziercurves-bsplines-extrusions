@@ -36,7 +36,7 @@ void DeBoor::fillVertices(std::vector<std::vector<Point>> &tab, float step) {
 
     int degree = knots.size() - tab[0].size() - 1;
     int indice = degree;
-    for (float i = degree; i < knots.size()-degree; i += step) {
+    for (float i = degree; i < knots.size()-degree-1; i += step) {
         if (i > indice + 1) {
             indice += 1;
         }
