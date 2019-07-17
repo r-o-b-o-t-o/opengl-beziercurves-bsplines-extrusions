@@ -5,7 +5,7 @@
 
 class Extruded : public Object {
 public:
-    explicit Extruded(std::vector<float> vertices);
+    explicit Extruded(std::vector<float> vertices, float height);
 
     void update() override;
     void draw() override;

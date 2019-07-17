@@ -130,7 +130,7 @@ void Shape::close(Application &app) {
     this->refreshControlPoints(app);
 }
 
-Extruded Shape::extrude() const {
+Extruded Shape::extrude(Application &app) const {
     std::vector<float> verts;
 
     int size = this->vertices.size();
@@ -173,12 +173,10 @@ Extruded Shape::extrude() const {
     int baseSize = verts.size();
 
     //// Top face
-    float h = 2.0f;
-    float scaleX = 0.6f;
-    float scaleY = 0.6f;
+    float h = app.extrudeScale.z;
     for (int i = 0; i < baseSize; i += 6) {
-        verts.push_back(verts[i] * scaleX);
-        verts.push_back(verts[i + 1] * scaleY);
+        verts.push_back(verts[i] * app.extrudeScale.x);
+        verts.push_back(verts[i + 1] * app.extrudeScale.y);
         verts.push_back(verts[i + 2] + h);
 
         verts.push_back(verts[i + 3] * -1.0f);
@@ -242,7 +240,7 @@ Extruded Shape::extrude() const {
         verts.push_back(0.0f);
     }
 
-    Extruded obj(verts);
+    Extruded obj(verts, h);
     obj.baseSize = baseSize;
     obj.sideSize = verts.size() - baseSize * 2;
     return obj;

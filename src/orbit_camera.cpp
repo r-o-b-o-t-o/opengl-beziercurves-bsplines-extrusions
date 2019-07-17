@@ -1,5 +1,7 @@
-#include "orbit_camera.h"
+#include "imgui/imgui.h"
 #include "glm/gtc/matrix_transform.hpp"
+
+#include "orbit_camera.h"
 
 OrbitCamera::OrbitCamera(float distance, glm::vec3 target) :
         distance(distance),
@@ -12,6 +14,10 @@ OrbitCamera::OrbitCamera(float distance, glm::vec3 target) :
 }
 
 void OrbitCamera::update(GLFWwindow* window, double dt) {
+    if (ImGui::IsMouseHoveringAnyWindow() || ImGui::GetIO().WantCaptureMouse) {
+        return;
+    }
+
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     if (mousePressed) {
         double mouseX, mouseY;

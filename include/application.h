@@ -20,6 +20,7 @@ public:
     Casteljau casteljau;
     DeBoor deboor;
     float step;
+    glm::vec3 extrudeScale;
     std::vector<Shape> shapes;
     bool flatMode;
     bool isDraggingControlPoint;

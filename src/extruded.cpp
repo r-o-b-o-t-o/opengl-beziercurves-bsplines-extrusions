@@ -3,11 +3,11 @@
 
 #include "extruded.h"
 
-Extruded::Extruded(std::vector<float> vertices) :
+Extruded::Extruded(std::vector<float> vertices, float height) :
         Object(vertices) {
 
     this->local = glm::rotate(this->local, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-    this->local = glm::translate(this->local, glm::vec3(0.0f, 0.0f, -1.0f));
+    this->local = glm::translate(this->local, glm::vec3(0.0f, 0.0f, -height / 2.0f));
 }
 
 void Extruded::update() {

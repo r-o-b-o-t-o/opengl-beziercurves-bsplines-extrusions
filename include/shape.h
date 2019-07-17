@@ -29,7 +29,7 @@ public:
 
     void setPointSize(float v);
     void close(Application &app);
-    Extruded extrude() const;
+    Extruded extrude(Application &app) const;
 
     void deleteBuffers();
 

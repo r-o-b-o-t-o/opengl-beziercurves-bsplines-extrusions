@@ -4,6 +4,7 @@
 Application::Application() :
         scene(nullptr),
         step(0.05f),
+        extrudeScale(0.5f, 0.5f, 2.0f),
         flatMode(true),
         isDraggingControlPoint(false),
         draggedShape(-1),

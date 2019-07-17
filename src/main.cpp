@@ -330,10 +330,14 @@ void drawUi(Application &app) {
             }
         }
 
+        bool h = ImGui::SliderFloat("Extrude height", &app.extrudeScale.z, 0.01f, 5.0f, "%.2f");
+        bool x = ImGui::SliderFloat("Extrude scale X", &app.extrudeScale.x, 0.01f, 5.0f, "%.2f");
+        bool y = ImGui::SliderFloat("Extrude scale Y", &app.extrudeScale.y, 0.01f, 5.0f, "%.2f");
+        if (h || x || y) {
+            switchTo3DView(app);
+        }
+
         static bool testCube = false;
-        ImGui::NewLine();
-        ImGui::NewLine();
-        ImGui::NewLine();
         if (ImGui::Checkbox("Test cube", &testCube)) {
             app.scene->getObject(0).enabled = testCube;
         }
@@ -360,7 +364,7 @@ void switchTo3DView(Application &app) {
             continue;
         }
 
-        Extruded extruded = shape.extrude();
+        Extruded extruded = shape.extrude(app);
         app.scene->addExtrudedObject(extruded);
     }
 }
