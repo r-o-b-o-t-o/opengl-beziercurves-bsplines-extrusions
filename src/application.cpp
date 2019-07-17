@@ -2,7 +2,7 @@
 #include "shape.h"
 
 Application::Application() :
-        camera(nullptr),
+        scene(nullptr),
         step(0.05f),
         flatMode(true),
         isDraggingControlPoint(false),

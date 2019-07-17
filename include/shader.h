@@ -1,10 +1,10 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include <map>
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 #include "glm/glm.hpp"
 
@@ -14,6 +14,7 @@ public:
     void use() const;
 
     unsigned int getId() const;
+    static void deleteShaders();
 
     void setBool(const std::string &name, bool value) const;
     void setInt(const std::string &name, int value) const;
@@ -24,9 +25,11 @@ public:
 
 private:
     unsigned int id;
+    static std::map<std::string, unsigned int> compiledShaders;
 
     int getUniformLocation(const std::string &name) const;
     std::string readShaderFile(const char* path) const;
+    unsigned int getShader(const char* path, unsigned int shaderType);
 };
 
 #endif

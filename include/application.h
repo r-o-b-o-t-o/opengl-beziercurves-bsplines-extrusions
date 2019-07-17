@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "orbit_camera.h"
+#include "scene.h"
 #include "casteljau.h"
 #include "de_boor.h"
 
@@ -16,7 +16,7 @@ class Application {
 public:
     Application();
 
-    OrbitCamera* camera;
+    Scene* scene;
     Casteljau casteljau;
     DeBoor deboor;
     float step;

@@ -47,7 +47,7 @@ void Shape::refreshControlPoints(Application &app) {
 }
 
 void Shape::refresh(Application &app) {
-    if (this->controlPoints.size() / 3 <= 2) {
+    if (this->controlPoints.size() / 3 < 3) {
         return;
     }
 
@@ -88,7 +88,9 @@ void Shape::controlPointsToDeBoorPoints(std::vector<Point> &target) {
 void Shape::draw() const {
     glm::mat4 local(1.0f);
 
-    if (this->controlPoints.size() / 3 > 2) {
+    int points = this->controlPoints.size() / 3;
+
+    if (points > 2) {
         this->curveShader.use();
         this->curveShader.setMat4("model", local);
         glBindVertexArray(this->curveVao);
@@ -99,8 +101,8 @@ void Shape::draw() const {
         this->controlPointsShader.use();
         this->controlPointsShader.setMat4("model", local);
         glBindVertexArray(this->controlPointsVao);
-        glDrawArrays(GL_POINTS, 0, this->controlPoints.size() / 3);
-        glDrawArrays(GL_LINE_STRIP, 0, this->controlPoints.size() / 3);
+        glDrawArrays(GL_POINTS, 0, points);
+        glDrawArrays(GL_LINE_STRIP, 0, points);
         glBindVertexArray(0);
     }
 }
@@ -115,4 +117,15 @@ void Shape::deleteBuffers() {
 void Shape::setPointSize(float v) {
     curveShader.setFloat("pointSize", v);
     controlPointsShader.setFloat("pointSize", v + 10.0f);
+}
+
+void Shape::close(Application &app) {
+    if (this->controlPoints.size() / 3 < 3) {
+        return;
+    }
+
+    this->controlPoints.push_back(this->controlPoints[0]);
+    this->controlPoints.push_back(this->controlPoints[1]);
+    this->controlPoints.push_back(this->controlPoints[2]);
+    this->refreshControlPoints(app);
 }

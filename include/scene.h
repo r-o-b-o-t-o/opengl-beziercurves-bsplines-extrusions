@@ -21,6 +21,7 @@ public:
     void addDirectionalLight(const DirectionalLight &l);
     DirectionalLight &getDirectionalLight(int idx);
     glm::mat4 &getProjectionMatrix();
+    void setAspectRatio(float ratio);
 
     void update();
     void draw();
@@ -34,6 +35,11 @@ protected:
 
     void updatePointLight(Object &o, int idx) const;
     void updateDirectionalLight(Object &o, int idx) const;
+
+private:
+    float fov;
+    float near;
+    float far;
 };
 
 #endif

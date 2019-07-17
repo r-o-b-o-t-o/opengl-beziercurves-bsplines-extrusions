@@ -4,7 +4,10 @@
 
 Scene::Scene(const OrbitCamera &camera, float fov, float aspectRatio, float near, float far) :
         projectionMatrix(glm::perspective(glm::radians(fov), aspectRatio, near, far)),
-        camera(camera) {
+        camera(camera),
+        fov(fov),
+        near(near),
+        far(far) {
 
 }
 
@@ -124,4 +127,8 @@ void Scene::draw() {
     for (Object &obj : this->objects) {
         obj.draw();
     }
+}
+
+void Scene::setAspectRatio(float ratio) {
+    this->projectionMatrix = glm::perspective(glm::radians(fov), ratio, near, far);
 }

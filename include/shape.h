@@ -27,6 +27,7 @@ public:
     void controlPointsToDeBoorPoints(std::vector<Point> &target);
 
     void setPointSize(float v);
+    void close(Application &app);
 
     void deleteBuffers();
 

@@ -13,6 +13,22 @@ Object::Object(float* vertices, int nbVertices) :
     for (int i = 0; i < nbVertices; ++i) {
         this->vertices.push_back(vertices[i]);
     }
+
+    glGenVertexArrays(1, &this->vao);
+    glGenBuffers(1, &this->vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+    glBufferData(GL_ARRAY_BUFFER, nbVertices * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+
+    glBindVertexArray(this->vao);
+
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Normal attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 }
 
 void Object::setMaterial(const PhongMaterial &mat) {
