@@ -200,48 +200,71 @@ Extruded Shape::extrude(Application &app) const {
         verts.push_back(verts[a]);
         verts.push_back(verts[a + 1]);
         verts.push_back(verts[a + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
 
         verts.push_back(verts[b]);
         verts.push_back(verts[b + 1]);
         verts.push_back(verts[b + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
 
         verts.push_back(verts[c]);
         verts.push_back(verts[c + 1]);
         verts.push_back(verts[c + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
 
         verts.push_back(verts[d]);
         verts.push_back(verts[d + 1]);
         verts.push_back(verts[d + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
 
         verts.push_back(verts[c]);
         verts.push_back(verts[c + 1]);
         verts.push_back(verts[c + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
 
         verts.push_back(verts[b]);
         verts.push_back(verts[b + 1]);
         verts.push_back(verts[b + 2]);
-        verts.push_back(0.0f);
+        verts.push_back(1.0f);
         verts.push_back(0.0f);
         verts.push_back(0.0f);
     }
+
+    /*for (unsigned int i = 0; i < verts.size(); i += 6) {
+        glm::vec3 normal = this->computeNormal(
+            glm::vec3(verts[i], verts[i + 1], verts[i + 2]),
+            glm::vec3(verts[i + 6], verts[i + 7], verts[i + 8]),
+            glm::vec3(verts[i + 12], verts[i + 13], verts[i + 14])
+        );
+        verts[i + 3] = normal.x;
+        verts[i + 4] = normal.y;
+        verts[i + 5] = normal.z;
+
+        verts[i + 9] = normal.x;
+        verts[i + 10] = normal.y;
+        verts[i + 11] = normal.z;
+
+        verts[i + 15] = normal.x;
+        verts[i + 16] = normal.y;
+        verts[i + 17] = normal.z;
+    }*/
 
     Extruded obj(verts, h);
     obj.baseSize = baseSize;
     obj.sideSize = verts.size() - baseSize * 2;
     return obj;
+}
+
+glm::vec3 Shape::computeNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c) const {
+    return glm::normalize(glm::cross(b - a, c - a));
 }

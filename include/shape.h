@@ -36,6 +36,8 @@ public:
 private:
     Shader curveShader;
     Shader controlPointsShader;
+
+    glm::vec3 computeNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c) const;
 };
 
 #endif
