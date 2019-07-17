@@ -80,12 +80,12 @@ vec3 computeDirectionalLight(DirectionalLight light) {
 }
 
 void main() {
-    vec3 output = vec3(0.0);
+    vec3 result = vec3(0.0);
     for (int i = 0; i < min(nbPointLights, MAX_LIGHTS); ++i) {
-        output += computePointLight(pointLights[i]);
+        result += computePointLight(pointLights[i]);
     }
     for (int i = 0; i < min(nbDirectionalLights, MAX_LIGHTS); ++i) {
-        output += computeDirectionalLight(directionalLights[i]);
+        result += computeDirectionalLight(directionalLights[i]);
     }
-    fragColor = vec4(output.rgb, 1.0);
+    fragColor = vec4(result.rgb, 1.0);
 }
