@@ -1,7 +1,6 @@
-#include "de_boor.h"
-#include <iostream>
 #include <cmath>
 
+#include "de_boor.h"
 
 float DeBoor::distance(const Point &a, const Point &b) {
     return std::sqrt(std::pow(b.getX() - a.getX(), 2.0f) + std::pow(b.getY() - a.getY(), 2.0f));
@@ -27,9 +26,6 @@ void DeBoor::algorithm(std::vector<std::vector<Point>> &tab, std::vector<int> &k
     this->vertices.push_back(point.getX()); // x
     this->vertices.push_back(point.getY()); // y
     this->vertices.push_back(0.0f); // z
-    this->vertices.push_back(0.0f); // r
-    this->vertices.push_back(1.0f); // g
-    this->vertices.push_back(0.0f); // b
 }
 
 void DeBoor::fillVertices(std::vector<std::vector<Point>> &tab, float step) {

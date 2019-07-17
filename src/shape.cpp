@@ -6,7 +6,7 @@
 
 Shape::Shape() :
         curveShader("shaders/flat.vs.glsl", "shaders/flat.fs.glsl"),
-        controlPointsShader("shaders/flat.vs.glsl", "shaders/controlPoints.fs.glsl") {
+        controlPointsShader("shaders/flat.vs.glsl", "shaders/flat.fs.glsl") {
 
     this->setPointSize(10.0f);
 
@@ -17,11 +17,8 @@ Shape::Shape() :
 
     glBindBuffer(GL_ARRAY_BUFFER, this->curveVbo);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 
@@ -37,6 +34,9 @@ Shape::Shape() :
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    curveShader.setVec3("color", 0.0f, 1.0f, 0.0f);
+    controlPointsShader.setVec3("color", 0.0f, 0.0f, 1.0f);
 }
 
 void Shape::refreshControlPoints(Application &app) {
@@ -94,7 +94,7 @@ void Shape::draw() const {
         this->curveShader.use();
         this->curveShader.setMat4("model", local);
         glBindVertexArray(this->curveVao);
-        glDrawArrays(GL_POINTS, 0, this->vertices.size() / 6);
+        glDrawArrays(GL_POINTS, 0, this->vertices.size() / 3);
         glBindVertexArray(0);
     }
     if (this->controlPoints.size() > 0) {
